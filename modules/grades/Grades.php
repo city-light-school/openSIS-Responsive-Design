@@ -398,7 +398,7 @@ function _makeExtraStuCols($value, $column) {
             break;
         case 'COMMENT':
             $tabindex += $count_assignments;
-            return TextInput($value, 'values[' . $THIS_RET['STUDENT_ID'] . '][' . $THIS_RET['ASSIGNMENT_ID'] . '][COMMENT]', '', ' size=11 maxlength=100 tabindex=' . $tabindex);
+            return TextInput($value, 'values[' . $THIS_RET['STUDENT_ID'] . '][' . $THIS_RET['ASSIGNMENT_ID'] . '][COMMENT]', '', ' size=11 maxlength=100 tabindex=' . (500 + $tabindex));
             break;
     }
 }
