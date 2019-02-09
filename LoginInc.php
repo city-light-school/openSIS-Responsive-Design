@@ -1,19 +1,19 @@
 <?php
 #**************************************************************************
-#  openSIS is a free student information system for public and non-public 
+#  openSIS is a free student information system for public and non-public
 #  schools from Open Solutions for Education, Inc. web: www.os4ed.com
 #
-#  openSIS is  web-based, open source, and comes packed with features that 
-#  include student demographic info, scheduling, grade book, attendance, 
-#  report cards, eligibility, transcripts, parent portal, 
-#  student portal and more.   
+#  openSIS is  web-based, open source, and comes packed with features that
+#  include student demographic info, scheduling, grade book, attendance,
+#  report cards, eligibility, transcripts, parent portal,
+#  student portal and more.
 #
 #  Visit the openSIS web site at http://www.opensis.com to learn more.
-#  If you have question regarding this system or the license, please send 
+#  If you have question regarding this system or the license, please send
 #  an email to info@os4ed.com.
 #
-#  This program is released under the terms of the GNU General Public License as  
-#  published by the Free Software Foundation, version 2 of the License. 
+#  This program is released under the terms of the GNU General Public License as
+#  published by the Free Software Foundation, version 2 of the License.
 #  See license.txt.
 #
 #  This program is distributed in the hope that it will be useful,
@@ -50,7 +50,7 @@ echo "<script type='text/javascript'>
   			cookie_date.setTime ( cookie_date.getTime() - 1 );
 			  document.cookie = cookie_name += \"=; expires=\" + cookie_date.toGMTString();
 		}
-                
+
 </script>";
 ?>
 
@@ -70,10 +70,13 @@ echo "<script type='text/javascript'>
             <div class="panel">
 
                 <div class="panel-heading">
-                    <div class="logo">
+                    <!-- <div class="logo">
                         <img src="assets/images/opensis_logo.png" alt="openSIS" />
-                    </div>                    
-                    <h3>Student Information System</h3>
+                    </div>                    -->
+										<div class="logo text-center">
+											<img width="60%"src="data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTMyIj48dGl0bGU+Q0xTIExvZ28gKG9mZmljaWFsMSlfQXJ0Ym9hcmQgMWI8L3RpdGxlPjxwYXRoIGQ9Ik0xMjAuOCwxMzJINDMuNDdRMjAsMTMyLDIwLDExMC4zN1Y2OS42M1EyMCw0OCw0My40Nyw0OEgxMjAuOFY2MC41MUg2MS40MmMtNCwwLTYuNzQsMi42Mi02Ljc0LDYuNDN2NDYuMTJjMCwzLjgxLDIuNzksNi40Myw2Ljc0LDYuNDNIMTIwLjhaIi8+PHBhdGggZD0iTTE2NS45LDkuMzVWMEgxNDYuNDdWOS4zNUgxNDNWMTIwaDM0VjkuMzVaTTE1MS4zMywxMDZoLTQuODZ2LTUuNDVoNC44NlptMC03Ljc5aC00Ljg2VjkyLjczaDQuODZabTAtMTUuNThoLTQuODZWNzcuMTRoNC44NlptMC03Ljc5aC00Ljg2VjY5LjM1aDQuODZabTAtNy44aC00Ljg2VjYxLjU2aDQuODZabTAtNy43OWgtNC44NlY1My43N2g0Ljg2Wm0wLTE1LjU4aC00Ljg2VjM4LjE4aDQuODZabTAtNy44aC00Ljg2VjMwLjM5aDQuODZabTAtNy43OWgtNC44NlYyMi42aDQuODZabTYuOTQsNzAuMTNIMTU0LjFWOTIuNzNoNC4xN1ptMC03Ljc5SDE1NC4xVjg0Ljk0aDQuMTdabTAtNy43OUgxNTQuMVY3Ny4xNGg0LjE3Wm0wLTcuNzlIMTU0LjFWNjkuMzVoNC4xN1ptMC03LjhIMTU0LjFWNjEuNTZoNC4xN1ptMC03Ljc5SDE1NC4xVjUzLjc3aDQuMTdabTAtNy43OUgxNTQuMVY0Nmg0LjE3Wm0wLTcuNzlIMTU0LjFWMzguMThoNC4xN1ptMC0xNS41OUgxNTQuMVYyMi42aDQuMTdaTTE2NS45LDEwNmgtNC4xN3YtNS40NWg0LjE3Wm0wLTcuNzloLTQuMTdWOTIuNzNoNC4xN1ptMC03Ljc5aC00LjE3Vjg0Ljk0aDQuMTdabTAtNy43OWgtNC4xN1Y3Ny4xNGg0LjE3Wm0wLTE1LjU5aC00LjE3VjYxLjU2aDQuMTdabTAtNy43OWgtNC4xN1Y1My43N2g0LjE3Wm0wLTcuNzloLTQuMTdWNDZoNC4xN1ptMC03Ljc5aC00LjE3VjM4LjE4aDQuMTdabTAtNy44aC00LjE3VjMwLjM5aDQuMTdabTAtNy43OWgtNC4xN1YyMi42aDQuMTdaTTE3Mi44NCwxMDZoLTQuMTd2LTUuNDVoNC4xN1ptMC0xNS41OGgtNC4xN1Y4NC45NGg0LjE3Wm0wLTcuNzloLTQuMTdWNzcuMTRoNC4xN1ptMC03Ljc5aC00LjE3VjY5LjM1aDQuMTdabTAtNy44aC00LjE3VjYxLjU2aDQuMTdabTAtNy43OWgtNC4xN1Y1My43N2g0LjE3Wm0wLTcuNzloLTQuMTdWNDZoNC4xN1ptMC03Ljc5aC00LjE3VjM4LjE4aDQuMTdabTAtMTUuNTloLTQuMTdWMjIuNmg0LjE3WiIvPjxwYXRoIGQ9Ik0zMDAsMTE0cTAsMTgtMjEuODYsMThIMTk5LjJWMTE5LjQ5aDYyLjE3cTYuNiwwLDYuNi01LjU0di01cTAtNS4xOC03LjE2LTUuMThoLTQyLjJxLTE5LjQxLDAtMTkuNDEtMjIuMTZ2LTEyUTE5OS4yLDQ4LDIxOC42MSw0OEgzMDBWNjAuNTFIMjM2LjY5cS01LjQ2LDAtNS40Niw0LjY1djQuNDdxMCw0LjgyLDUuNDYsNC44Mmg0MS40NVEzMDAsNzQuNDUsMzAwLDkyLjY4WiIvPjxyZWN0IHg9IjExMC41IiB5PSIxMTkuNDkiIHdpZHRoPSI5OSIgaGVpZ2h0PSIxMi41MSIvPjwvc3ZnPg=="/>
+										</div>
+										<h3>Student Information System</h3>
                 </div>
                 <div class="panel-body">
 
@@ -88,12 +91,12 @@ echo "<script type='text/javascript'>
 
                             if ($error[0] != '') {
                                 ?>
-                                <div class="alert alert-danger" role="alert">   
+                                <div class="alert alert-danger" role="alert">
                                     <i aria-hidden="true" class="fa fa-exclamation-triangle"></i>
                                     <?php
                                     echo $error[0];
                                     ?>
-                                </div>   
+                                </div>
                                 <?php
                             }
                             ?>
@@ -103,7 +106,7 @@ echo "<script type='text/javascript'>
                                     ?>
                                     <div class="form-group">
                                         <h4 class="text-center text-danger"><i class="icon-warning22" style="font-size: 50px;"></i><br/><br/>openSIS is under maintenance and login privileges have been turned off. Please log in when it is available again.</h4>
-                                    </div> 
+                                    </div>
                                     <?php
                                 }
                                 if (isset($_SESSION['conf_msg']) && $_SESSION['conf_msg'] != '') {
@@ -116,7 +119,7 @@ echo "<script type='text/javascript'>
                                     </div>
                                     <?php
                                 }
-                                 
+
                                 ?>
                                 <div class="form-group">
                                     <?php
@@ -156,7 +159,7 @@ echo "<script type='text/javascript'>
                                     <button name='log' type="submit" class="btn btn-success btn-lg btn-block" onMouseDown="set_ck();Set_Cookie('dhtmlgoodies_tab_menu_tabIndex', '', -1)">Login</button>
                                 </p>
                                 <p class="text-center"><a href="ForgotPass.php">Forgot Username / Password?</a></p>
-                
+
                             </form>
                         </div>
                     </div>
