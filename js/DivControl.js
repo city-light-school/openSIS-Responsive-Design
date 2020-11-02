@@ -37,6 +37,9 @@ function show_div(name, mp_id)
 }
 
 function selectFile(input) {
+    
+   
+    if(input.files[0].type!='' && (input.files[0].type=='image/png' || input.files[0].type=='image/jpeg'   || input.files[0].type=='image/jpg' || input.files[0].type=='image/tiff' || input.files[0].type=='image/bmp')){
       if (input.files && input.files[0]) {
 
   var reader = new FileReader();
@@ -85,6 +88,9 @@ $('#imgblob').val(imgblob[1].trim());
   
         
     }
+}
+else
+    document.getElementById('divErr').innerHTML='<div class="alert alert-danger alert-styled-left alert-bordered">Unsupported file format, use common image file like - jpeg, png, tiff, bmp etc.</div>';
 //    if (selectedFile.match(/fakepath/)) {
 //        // update the file-path text using case-insensitive regex
 //        selectedFile = selectedFile.replace(/C:\\fakepath\\/i, '');
@@ -583,6 +589,10 @@ function cleanModal(id)
 {
     var obj = document.getElementById(id);
     obj.innerHTML = '';
+    
+    if(document.getElementById('conf_div1')){
+       document.getElementById('conf_div1').innerHTML = ''; 
+    }
 }
 function cpPasteField(title,course_period_id)
 { 
@@ -595,14 +605,14 @@ function cpPasteField(title,course_period_id)
    $('.modal-backdrop').remove();
 }
 function requestPasteField(title,course_id)
-{ 
-   
+{
     var obj = document.getElementById('request_div');
     var field = title+'<INPUT type=hidden name=request_course_id value='+course_id+'>';
-//    var obj_hidden = document.getElementById('hidden_tag_cp_id');
+    // var obj_hidden = document.getElementById('hidden_tag_cp_id');
     obj.innerHTML =field ;
-   $('#modal_default_request').modal('hide');
-   $('.modal-backdrop').remove();
+    $('#course_div').text(title);
+    $('#modal_default_request').modal('hide');
+    $('.modal-backdrop').remove();
 }
 function checkChecked(id1,id2)
 {
@@ -651,5 +661,51 @@ function checkAllDtMod(elem,name)
              document.getElementById(unique_id[i]).checked=false;
             }
         }
+    }
+}
+
+function checkAllDtMod2(elem,name)
+{
+    var res_length=document.getElementById('res_length').value;
+    var res_len=document.getElementById('res_len').value;
+    var unique_id=res_len.split(',');
+    
+    for(var i=0;i<res_length;i++){
+        if(elem.checked==true){
+            if(document.getElementById(unique_id[i])){
+                $('#hidden_checkboxes').append("<input type=hidden name='"+name+"["+unique_id[i]+"]' value='"+unique_id[i]+"' data-checkbox-hidden-id='"+unique_id[i]+"' />");
+                // document.getElementById(unique_id[i]).checked=true;
+                // window.$('#'+unique_id[i]).attr("checked",true);
+                $(".student_label_cbx").prop('checked', true);
+                // alert(unique_id[i]);
+            }
+        }else{
+            if(document.getElementById(unique_id[i])){
+                $('[data-checkbox-hidden-id='+unique_id[i]+']').remove();   
+                // document.getElementById(unique_id[i]).checked=false;
+                $(".student_label_cbx").prop('checked', false);
+            }
+        }
+    }
+}
+
+function addseccheck_button(){
+    if (document.getElementById('values[people][SECONDARY][RELATIONSHIP]').value != ''){
+        document.getElementById('rss').checked=true;
+    }else{
+       document.getElementById('rss').checked=false; 
+    }
+
+}
+function hide_filter_modal()
+{
+    window.$('#modal_filter_edit').modal('toggle');
+}
+
+function closeThisModal(modal_ID = false)
+{
+    if(modal_ID != '')
+    {
+        window.$('#'+modal_ID).modal('toggle');
     }
 }

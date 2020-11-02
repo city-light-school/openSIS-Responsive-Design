@@ -27,6 +27,7 @@
 #
 #***************************************************************************************
 include('../../RedirectModulesInc.php');
+include('lang/language.php');
 
 
 echo '<div class="row">';
@@ -34,8 +35,8 @@ echo '<div class="row">';
 echo '<div class="col-md-6 col-md-offset-3">';
 
 $tables = array('school_periods' => 'School Periods', 'school_years' => 'Marking Periods', 'report_card_grades' => 'Report Card Grade Codes', 'report_card_comments' => 'Report Card Comment Codes', 'eligibility_activities' => 'Eligibility Activity Codes', 'attendance_codes' => 'Attendance Codes', 'school_gradelevels' => 'Grade Levels', 'rooms' => 'Rooms', 'school_gradelevel_sections' => 'Sections', 'course_subjects' => 'Subjects', 'school_calendars' => 'Calendar','courses' => 'Course',);
-
-$table_list = '<br/><div class="form-group"><label class="control-label text-uppercase" for="schoolTitle"><b>New School\'s Title</b></label><INPUT type=text name=title placeholder="Title" value="New School" id="schoolTitle" onKeyUp="checkDuplicateName(1,this,0);" onBlur="checkDuplicateName(1,this,0);" class="form-control"></div>';
+#$tables = array('school_periods' =>_schoolPeriods, 'school_years' =>_markingPeriods, 'report_card_grades' =>_reportCardGradeCodes, 'report_card_comments' =>_schoolPeriods, 'eligibility_activities' =>_schoolPeriods, 'attendance_codes' =>_schoolPeriods, 'school_gradelevels' =>_reportCardGradeCodes, 'rooms' =>_schoolPeriods, 'school_gradelevel_sections' =>_schoolPeriods, 'course_subjects' =>_schoolPeriods, 'school_calendars' =>_schoolPeriods,'courses' =>_schoolPeriods,);
+$table_list = '<br/><div class="form-group"><label class="control-label text-uppercase" for="schoolTitle"><b>'._newSchool.'\'s '._title.'</b></label><INPUT type=text name=title placeholder="Title" value="'._newSchool.'" id="schoolTitle" onKeyUp="checkDuplicateName(1,this,0);" onBlur="checkDuplicateName(1,this,0);" class="form-control"></div>';
 
 $table_list .= '<div class="row">';
 foreach ($tables as $table => $name) {
@@ -55,10 +56,10 @@ $table_list .= "<input type=hidden id=checkDuplicateNameTable1 value='schools'/>
 $table_list .= "<input type=hidden id=checkDuplicateNameField1 value='title'/>";
 $table_list .= "<input type=hidden id=checkDuplicateNameMsg1 value='school name'/>";
 if (clean_param($_REQUEST['copy'], PARAM_ALPHAMOD) == 'done') {
-    echo '<strong>School information has been copied successfully.</strong>';
+    echo '<strong>'._schoolInformationHasBeenCopiedSuccessfully.'</strong>';
 } else {
-    DrawBC("School Setup > " . ProgramTitle());
-    if (Prompt_Copy_School('Confirm Copy School', 'Are you sure you want to copy the data for <span class="text-primary">' . GetSchool(UserSchool()) . '</span> to a new school?', $table_list)) {
+    DrawBC(""._schoolSetup." > " . ProgramTitle());
+     if (Prompt_Copy_School(''._confirmCopySchool.'', ''._areYouSureYouWantToCopyTheDataFor. ' <span class="text-primary">' . GetSchool(UserSchool()) . '</span> '._toANewSchool.'', $table_list)) {
         if (count($_REQUEST['tables'])) {
 
             $id = DBGet(DBQuery('SHOW TABLE STATUS LIKE \'schools\''));
@@ -93,11 +94,23 @@ if (clean_param($_REQUEST['copy'], PARAM_ALPHAMOD) == 'done') {
                 $temp_start_date=$current_start_date[1]['START_DATE'];
                 else
                 $temp_start_date=date('Y-m-d');
-                DBQuery('INSERT INTO  staff_school_relationship(staff_id,school_id,syear,start_date) VALUES (' . $super_id[1]['STAFF_ID'] . ',' . $id . ',' . UserSyear() . ',"'.$temp_start_date.'")');
+                 $staff_exists=DBGet(DBQuery('SELECT * FROM staff_school_relationship WHERE STAFF_ID='.$super_id[1]['STAFF_ID'] . ' AND SCHOOL_ID='. $id . ' AND SYEAR='.UserSyear()));
+                    if(count($staff_exists)==0)
+                        DBQuery('INSERT INTO  staff_school_relationship(staff_id,school_id,syear,start_date) VALUES (' . $super_id[1]['STAFF_ID'] . ',' . $id . ',' . UserSyear() . ',"'.$temp_start_date.'")');
             }
             foreach ($_REQUEST['tables'] as $table => $value)
                 _rollover($table);
             DBQuery("UPDATE school_years SET ROLLOVER_ID = NULL WHERE SCHOOL_ID='$id'");
+
+            $chk_stu_enrollment_codes_exist = DBGet(DBQuery('SELECT COUNT(*) AS STU_ENR_COUNT FROM `student_enrollment_codes` WHERE `syear` = \''.$new_sch_syear.'\''));
+            if($chk_stu_enrollment_codes_exist[1]['STU_ENR_COUNT'] == 0)
+            {
+                DBQuery('INSERT INTO `student_enrollment_codes` (`syear`, `title`, `short_name`, `type`) VALUES (\''.$new_sch_syear.'\', \'Transferred out\', \'TRAN\', \'TrnD\')');
+                DBQuery('INSERT INTO `student_enrollment_codes` (`syear`, `title`, `short_name`, `type`) VALUES (\''.$new_sch_syear.'\', \'Transferred in\', \'TRAN\', \'TrnE\')');
+                DBQuery('INSERT INTO `student_enrollment_codes` (`syear`, `title`, `short_name`, `type`) VALUES (\''.$new_sch_syear.'\', \'Rolled over\', \'ROLL\', \'Roll\')');
+                DBQuery('INSERT INTO `student_enrollment_codes` (`syear`, `title`, `short_name`, `type`) VALUES (\''.$new_sch_syear.'\', \'Dropped Out\', \'DROP\', \'Drop\')');
+                DBQuery('INSERT INTO `student_enrollment_codes` (`syear`, `title`, `short_name`, `type`) VALUES (\''.$new_sch_syear.'\', \'New\', \'NEW\', \'Add\')');
+            }
         }
         echo '<FORM action=Modules.php?modname=' . strip_tags(trim($_REQUEST['modname'])) . ' method=POST>';
         //echo '<script language=JavaScript>parent.side.location="' . $_SESSION['Side_PHP_SELF'] . '?modcat="+parent.side.document.forms[0].modcat.value;</script>';
@@ -108,13 +121,13 @@ if (clean_param($_REQUEST['copy'], PARAM_ALPHAMOD) == 'done') {
         echo '<div class="icon-school">';
         echo '<span></span>';
         echo '</div>';
-        echo '<h5 class="p-20">The data have been copied to a new school called <b class="text-success">'.paramlib_validation($col = TITLE, $_REQUEST['title']).'</b>. To finish the operation, click the button below.</h5>';
-        echo '<div class="text-center"><INPUT type="submit" value="Finish Setup" class="btn btn-primary btn-lg"></div>';
+        echo '<h5 class="p-20">'._theDataHaveBeenCopiedToANewSchoolCalled.' <b class="text-success">'.paramlib_validation($col = TITLE, $_REQUEST['title']).'</b>. '._toFinishTheOperationClickTheButtonBelow.'</h5>';
+        echo '<div class="text-center"><INPUT type="submit" value="'._finishSetup.'" class="btn btn-primary btn-lg"></div>';
         echo '</div>'; //.new-school-created
         echo '</div>'; //.panel-body
         echo '</div>'; //.panel
         
-        //DrawHeaderHome('<i class="icon-checkbox-checked"></i> &nbsp;The data have been copied to a new school called "' . paramlib_validation($col = TITLE, $_REQUEST['title']) . '".To finish the operation, click OK button.', '<INPUT  type=submit value=OK class="btn btn-primary">');
+        //DrawHeaderHome('<i class="icon-checkbox-checked"></i> &nbsp;The data have been copied to a new school called "' . paramlib_validation($col = TITLE, $_REQUEST['title']) . '".To finish the operation, click OK button.', '<INPUT  type=submit value="._ok." class="btn btn-primary">');
         echo '<input type="hidden" name="copy" value="done"/>';
         echo '</FORM>';
         unset($_SESSION['_REQUEST_vars']['tables']);
@@ -266,7 +279,7 @@ function _rollover($table) {
            $get_cs_subjects=DBGet(DBQuery('SELECT * FROM course_subjects WHERE SYEAR=\'' . UserSyear() . '\' AND SCHOOL_ID=\'' . UserSchool() . '\'')); 
            foreach($get_cs_subjects as $gcsi=>$gcsd)
            {
-               $get_course=DBGet(DBQuery('SELECT SYEAR,TITLE,SHORT_NAME,GRADE_LEVEL FROM courses WHERE SYEAR=\'' . UserSyear() . '\' AND SCHOOL_ID=\'' . UserSchool() . '\''));
+               $get_course=DBGet(DBQuery('SELECT SYEAR,TITLE,SHORT_NAME,GRADE_LEVEL FROM courses WHERE SYEAR=\'' . UserSyear() . '\' AND SCHOOL_ID=\'' . UserSchool() . '\' AND SUBJECT_ID=\''.$gcsd['SUBJECT_ID'].'\''));
                foreach($get_course as $gc)
                {
                    $sql_columns=array('SUBJECT_ID','SCHOOL_ID');

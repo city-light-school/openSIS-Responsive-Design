@@ -27,7 +27,7 @@ function db_start() {
                 $errormessage = mysqli_error($connection);
                 break;
         }
-        db_show_error("", "Could not Connect to Database: $DatabaseServer", $errstring);
+        db_show_error("", ""._couldNotConnectToDatabase.": $DatabaseServer", $errstring);
     }
     return $connection;
 }
@@ -61,12 +61,12 @@ function DBQuery($sql) {
                         $result = $connection->query($value);
                         if (!$result) {
                             $connection->query("ROLLBACK");
-                            die(db_show_error($sql, "DB Execute Failed.", mysqli_error($connection)));
+                            die(db_show_error($sql, _dbExecuteFailed, mysqli_error($connection)));
                         }
                     }
                 }
             } else {
-                $result = $connection->query($sql) or die(db_show_error($sql, "DB Execute Failed.", mysqli_error($connection)));
+                $result = $connection->query($sql) or die(db_show_error($sql, _dbExecuteFailed, mysqli_error($connection)));
             }
             break;
     }
@@ -365,14 +365,16 @@ $cp=DBGet(DBQuery('SELECT * FROM course_periods WHERE COURSE_PERIOD_ID='.$course
 }
 
 
+$connection = new mysqli($DatabaseServer, $DatabaseUsername, $DatabasePassword, $DatabaseName);
 
-$format = strtolower($_REQUEST['format']);
-$api_key= $_REQUEST['api_key'];
-$api_secret= $_REQUEST['api_secret'];
+$format = mysqli_real_escape_string($connection,strtolower(optional_param('format', '', PARAM_RAW)));
+$api_key= mysqli_real_escape_string($connection,optional_param('api_key', '', PARAM_RAW));
+$api_secret= mysqli_real_escape_string($connection, optional_param('api_secret', '', PARAM_RAW));
+
 $validate= DBGet(DBQuery('SELECT * FROM api_info WHERE API_KEY=\''.$api_key.'\' AND API_SECRET=\''.$api_secret.'\''));
 if(count($validate) > 0)
 {
-    $syear=$_REQUEST['sch_year'];
+    $syear=mysqli_real_escape_string($connection,strtolower(optional_param('sch_year', '', PARAM_RAW)));
     $all_sch_ids=DBGet(DBQuery('SELECT DISTINCT SCHOOL_ID AS SCHOOL_ID FROM school_years WHERE SYEAR = '.$syear));
 //    $all_sch_ids=DBGet(DBQuery('SELECT DISTINCT SCHOOL_ID AS SCHOOL_ID FROM school_years WHERE SCHOOL_ID=1 AND SYEAR = '.$syear));
     $data=array();

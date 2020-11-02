@@ -31,16 +31,16 @@ $(function () {
 
     $('.navigation-main li a').click(function () {
         var that = $(this);
-        that.closest('ul').children('li').each(function(){
+        that.closest('ul').children('li').each(function () {
             $(this).removeClass('active');
         });
         that.parents('li').addClass('active');
     });
 
     /*if ($('.current-submenu').length > 0) {
-        $('.current-submenu').closest('li').addClass('active');
-        $('.current-submenu').closest('ul').show();
-    }*/
+     $('.current-submenu').closest('li').addClass('active');
+     $('.current-submenu').closest('ul').show();
+     }*/
 
 
     if ($(".switch-fake-title").length > 0) {
@@ -662,3 +662,17 @@ $(function () {
     $('[data-popup="tooltip"]').tooltip();
 
 });
+
+
+//function hasScroll(el, direction){
+//    direction = (direction === 'vertical') ? 'scrollTop' : 'scrollLeft';
+//    var result = !! el[direction];
+//
+//    if (!result) {
+//        el[direction] = 1;
+//        result = !!el[direction];
+//        el[direction] = 0;
+//    }
+//    return result;
+//}
+

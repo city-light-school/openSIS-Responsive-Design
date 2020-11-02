@@ -35,13 +35,15 @@ if ($_REQUEST['From'] && $_REQUEST['to']) {
     $From = (date('Y-m-d', strtotime($_REQUEST['placed_From'])));
 } elseif (!$_REQUEST['month_From'] && !$_REQUEST['day_From'] && !$_REQUEST['year_From']) {
     $missing_date= DBGet(DBQuery('SELECT MIN(SCHOOL_DATE) AS SCHOOL_DATE FROM missing_attendance WHERE SCHOOL_ID='.UserSchool().' AND SYEAR='.UserSyear()));
-    if(count($missing_date) > 0)
+    
+    if(count($missing_date) > 0 && $missing_date[1]['SCHOOL_DATE']!="")
     {
      $_REQUEST['placed_From'] = $missing_date[1]['SCHOOL_DATE'];
     }
     else
     $_REQUEST['placed_From'] = '01-' . date('m') . '-' . date('Y');
     $From = (date('Y-m-d', strtotime($_REQUEST['placed_From'])));
+    
 }
 if ($_REQUEST['month_to'] && $_REQUEST['day_to'] && $_REQUEST['year_to']) {
     $_REQUEST['placed_to'] = $_REQUEST['day_to'] . '-' . $_REQUEST['month_to'] . '-' . $_REQUEST['year_to'];
@@ -77,9 +79,9 @@ if (User('PROFILE') == 'admin') {
 
     $header .= "<FORM class=\"m-b-0\" name=missingatten id=missingatten action=Modules.php?modname=$_REQUEST[modname]&func=save method=POST>";
     $header .= '<div class="form-inline">';
-    $header .= '<div class="input-group"><span class="input-group-addon">From : </span>' . DateInputAY($From, 'From', 1).'</div>';
-    $header .= '<div class="input-group"><span class="input-group-addon">To : </span>' . DateInputAY($to, 'to', 2).'</div>';
-    $header .= '<INPUT type=submit class="btn btn-primary" name=go value=Go >';
+    $header .= '<div class="input-group"><span class="input-group-addon">'._from.' : </span>' . DateInputAY($From, 'From', 1).'</div>';
+    $header .= '<div class="input-group"><span class="input-group-addon">'._to.' : </span>' . DateInputAY($to, 'to', 2).'</div>';
+    $header .= '<INPUT type=submit class="btn btn-primary" name=go value='._go.' >';
     $header .= '</div>';
     $header .= '</form>';
     DrawHeader($header);
@@ -91,12 +93,14 @@ if (User('PROFILE') == 'admin') {
         $options = array('admin' => 'Administrator', 'teacher' => 'Teacher', 'parent' => 'Parent', 'none' => 'No Access');
         $singular = $options[$extra['profile']];
         $plural = $singular . ($options[$extra['profile']] == 'none' ? 'es' : 's');
-        $columns = array('FULL_NAME' => $singular, 'STAFF_ID' => 'Staff ID');
+        $columns = array('FULL_NAME' => $singular, 'STAFF_ID' =>_staffId);
     } else {
         $singular = 'User';
         $plural = 'users';
-//        $columns = array('FULL_NAME' => 'Staff Member', 'PROFILE' => 'Profile', 'STAFF_ID' => 'Staff ID');
-        $columns = array('FULL_NAME' => 'Name', 'PROFILE' => 'Profile', 'STAFF_ID' => 'Staff ID');
+//        $columns = array('FULL_NAME' => 'Staff Member', 'PROFILE' => 'Profile', 'STAFF_ID' =>_staffId);
+        $columns = array('FULL_NAME' =>_name,
+         'PROFILE' =>_profile,
+         'STAFF_ID' =>_staffId);
         
     }
     if (is_array($extra['columns_before']))

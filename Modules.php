@@ -64,7 +64,7 @@ if (count($filelist) > 3) {
     }
 }
 echo "<noscript><META http-equiv=REFRESH content='0;url=EnableJavascript.php' /></noscript>";
-//echo "<script type='text/javascript'>	
+// echo "<script type='text/javascript'>	
 //        function init(param,param2) {        
 //            calendar.set('date_'+param);
 //            if(param2==2)
@@ -74,12 +74,17 @@ echo "<noscript><META http-equiv=REFRESH content='0;url=EnableJavascript.php' />
 //            }
 //            document.getElementById('date_'+param).click();
 //        }		
-//</script>";
+// </script>";
 
 error_reporting(1);
 
+$module_commit_in   =   "";
+$module_commit_out  =   "";
+
 $start_time = time();
 include 'Warehouse.php';
+include('lang/language.php');
+// echo _NAME;
 $old_school = UserSchool();
 $old_syear = UserSyear();
 
@@ -95,13 +100,11 @@ if (!isset($_REQUEST['_openSIS_PDF'])) {
     /*
      * Include Stylesheets
      */
-    echo '<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">';
     echo '<link href="assets/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css">';
     echo '<link href="assets/css/bootstrap.css" rel="stylesheet" type="text/css">';
     echo '<link href="assets/css/icons/fontawesome/styles.min.css" rel="stylesheet" type="text/css">';
     echo '<link href="assets/css/core.css?v=' . rand(0000, 99999) . '" rel="stylesheet" type="text/css">';
     echo '<link href="assets/js/plugins/pickers/bootstrap-datepicker/css/bootstrap-datepicker.css?v=' . rand(0000, 99999) . '" rel="stylesheet" type="text/css">';
-//    echo '<link href="assets/js/plugins/pickers/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css">';
     echo '<link href="assets/js/plugins/pickers/clockpicker/bootstrap-clockpicker.min.css" rel="stylesheet" type="text/css">';
     echo '<link href="assets/css/components.css?v=1.1" rel="stylesheet" type="text/css">';
     echo '<link href="assets/css/colors.css?v=' . rand(0000, 99999) . '" rel="stylesheet" type="text/css">';
@@ -113,6 +116,7 @@ if (!isset($_REQUEST['_openSIS_PDF'])) {
      */
     echo '<script type="text/javascript" src="assets/js/core/libraries/jquery.min.js"></script>';
     echo '<script type="text/javascript" src="assets/js/core/libraries/bootstrap.min.js"></script>';
+    echo '<script type="text/javascript" src="assets/js/core/libraries/jquery.mousewheel.js"></script>';
     echo '<script type="text/javascript" src="assets/js/core/libraries/jquery_ui/interactions.min.js"></script>';
     echo '<script type="text/javascript" src="assets/js/plugins/loaders/blockui.min.js"></script>';
     echo '<script type="text/javascript" src="assets/js/plugins/ui/prism.min.js"></script>';
@@ -136,7 +140,6 @@ if (!isset($_REQUEST['_openSIS_PDF'])) {
     echo '<script type="text/javascript" src="assets/js/plugins/ui/ripple.min.js"></script>';
     echo '<script type="text/javascript" src="assets/js/pages/form_select2.js"></script>';
     echo '<script type="text/javascript" src="assets/js/pages/picker_date.js"></script>';
-    //echo '<script type="text/javascript" src="assets/js/pages/picker_datetime.js"></script>';
     echo '<script type="text/javascript" src="assets/js/pages/form_checkboxes_radios.js"></script>';
     echo '<script type="text/javascript" src="js/custom.js?v=' . rand(0000, 99999) . '"></script>';
     echo '<script type="text/javascript">
@@ -163,7 +166,7 @@ if (!isset($_REQUEST['_openSIS_PDF'])) {
 
     echo "<BODY>";
 }
-echo '<div id="loading-image"><i class="fa fa-cog fa-spin fa-lg fa-fw"></i> Loading...</div>';
+echo '<div id="loading-image"><i class="fa fa-cog fa-spin fa-lg fa-fw"></i> '._loading.'...</div>';
 echo '<div class="navbar navbar-inverse bg-white">
             <div class="navbar-header">
                 <a class="sidebar-control sidebar-main-toggle hidden-xs" data-popup="tooltip" data-placement="bottom" data-container="body" data-original-title="Collapse Menu"><i class="icon-paragraph-justify3"></i></a>
@@ -357,7 +360,7 @@ if (User('PROFILE') != 'teacher') {
 
     //===================================================================================================
 
-    //For Marking Period
+    // For Marking Period
     echo "<li><div class=\"form-group\"><FORM name=head_frm id=head_frm action=Side.php?modfunc=update&btnn=$btn&nsc=$ns method=POST>
                         <INPUT type=hidden name=modcat value='' id=modcat_input>";
 
@@ -385,10 +388,10 @@ if (User('PROFILE') != 'teacher') {
             echo "<OPTION value=$quarter[MARKING_PERIOD_ID]" . (UserMP() == $quarter['MARKING_PERIOD_ID'] ? ' SELECTED' : '') . ">" . $quarter['TITLE'] . "</OPTION>";
     }
     echo "</SELECT>";
-    //Marking Period
+    // Marking Period
 
     echo '</FORM></div></li>';
-}##################Porfile Not Teacher End##########################################
+}################## Porfile Not Teacher End ##########################################
 
 if (UserStudentID() && User('PROFILE') != 'parent' && User('PROFILE') != 'student') {
     $RET = DBGet(DBQuery("SELECT FIRST_NAME,LAST_NAME,MIDDLE_NAME,NAME_SUFFIX FROM students WHERE STUDENT_ID='" . UserStudentID() . "'"));
@@ -457,7 +460,7 @@ if (User('PROFILE') == 'teacher') {
             $ret_increment++;
         }
     }
-//    print_r($RET);
+   
     if (!UserCourse()) {
         $_SESSION['UserCourse'] = $RET[1]['COURSE_ID'];
     }
@@ -540,22 +543,47 @@ if (User('PROFILE') != 'parent') {
       $user_picture = '<a href="javascript:void(0)"><IMG src="data:image/jpeg;base64,'. base64_encode($img_info) . '" class="img-circle img-responsive"></a>';
     else
         $user_picture = '<a href="javascript:void(0)"><IMG SRC="assets/no_avtar.png" class="img-circle img-responsive"></a>';
-//    if (($StudentPicturesPath . UserStudentID() . '.JPG' || ($UserPicturesPath . UserID() . '.JPG'))) {
-//        if (UserStudentID())
-//            $picture_path = $StudentPicturesPath . UserStudentID() . '.JPG';
-//        if (UserID())
-//            $picture_path = $UserPicturesPath . UserID() . '.JPG';
-//        if (file_exists($picture_path)) {
-//            $user_picture = '<a href="javascript:void(0)"><img src="' . $picture_path . '"  alt="" class="img-circle img-responsive"></a>';
-//        } else {
-//            $user_picture = '<a href="javascript:void(0)"><IMG SRC="assets/no_avtar.png" class="img-circle img-responsive"></a>';
-//        }
-//    } else {
-//        $user_picture = '<a href="javascript:void(0)"><IMG SRC="assets/no_avtar.png" class="img-circle img-responsive"></a>';
-//    }
+   // if (($StudentPicturesPath . UserStudentID() . '.JPG' || ($UserPicturesPath . UserID() . '.JPG'))) {
+   //     if (UserStudentID())
+   //         $picture_path = $StudentPicturesPath . UserStudentID() . '.JPG';
+   //     if (UserID())
+   //         $picture_path = $UserPicturesPath . UserID() . '.JPG';
+   //     if (file_exists($picture_path)) {
+   //         $user_picture = '<a href="javascript:void(0)"><img src="' . $picture_path . '"  alt="" class="img-circle img-responsive"></a>';
+   //     } else {
+   //         $user_picture = '<a href="javascript:void(0)"><IMG SRC="assets/no_avtar.png" class="img-circle img-responsive"></a>';
+   //     }
+   // } else {
+   //     $user_picture = '<a href="javascript:void(0)"><IMG SRC="assets/no_avtar.png" class="img-circle img-responsive"></a>';
+   // }
 }
 
 //$user_picture .= '<input type="file" name=""  />';
+// echo User('PROFILE');
+// if(User('PROFILE') == "Super Administrator")
+// {
+//     $userProfile = _superAdministrator;
+
+// }elseif(User('PROFILE') == "Administrator")
+// {
+//     $userProfile = _administrator;
+    
+// }elseif(User('PROFILE') == "Teacher")
+// {
+//     $userProfile = _teacher;
+    
+// }elseif(User('PROFILE') == "Student")
+// {
+//     $userProfile = _student;
+
+// }elseif(User('PROFILE') == "Parent"){
+//     $userProfile = _parent;
+
+// }elseif(User('PROFILE') == "Admin Asst")
+// {
+//     $userProfile = _adminAsst;
+
+// }
 
 echo '</div>
         </div>
@@ -584,16 +612,18 @@ echo '</div>
                                         </div>
 
                                         <div class="sidebar-user-material-menu">
-                                            <a href="#user-nav" data-toggle="collapse"><span>My Account</span> <i class="caret"></i></a>
+                                            <a href="#user-nav" data-toggle="collapse"><span>'._myAccount.'</span> <i class="caret"></i></a>
                                         </div>
                                     </div>
 
                                     <div class="navigation-wrapper collapse" id="user-nav">
                                         <ul class="navigation">
                                 
-                                            <li><a href="javascript:void(0)" onclick="check_content(\'Ajax.php?modname=messaging/Inbox.php\');"><i class="icon-comment-discussion"></i> <span>Messages</span></a></li>
-                                            <li><a href="javascript:void(0)" onclick="check_content(\'Ajax.php?modname=users/Preferences.php\');"><i class="icon-equalizer"></i> <span>Preferences</span></a></li>
-                                            <li><a href="index.php?modfunc=logout"><i class="icon-switch2"></i> <span>Logout</span></a></li>
+                                            <li><a href="javascript:void(0)" onclick="check_content(\'Ajax.php?modname=messaging/Inbox.php\');"><i class="icon-comment-discussion"></i> <span>'._messages.'</span></a></li>';
+if(User('PROFILE')!='student')                                            
+echo'<li><a href="javascript:void(0)" onclick="check_content(\'Ajax.php?modname=users/Preferences.php\');"><i class="icon-equalizer"></i> <span>'._preferences.'</span></a></li>';
+
+                                            echo'<li><a href="index.php?modfunc=logout"><i class="icon-switch2"></i> <span>'._logout.'</span></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -622,12 +652,13 @@ $menu_icons = array(
     "eligibility" => "icon-checkmark3",
     "messaging" => "icon-envelop5",
     "tools" => "icon-hammer-wrench",
+    "library" => "icon-book3",
     "billing" => "icon-calculator2",
     "discipline" => "icon-hammer2"
 );
 
 //echo "<li><a href='javascript:void(0)' onmouseup='check_content(\"Ajax.php?modname=miscellaneous/Portal.php\");' onmousedown='document.getElementById(\"header\").innerHTML = \"Home\";document.getElementById(\"cframe\").src = \"Bottom.php?modcat=home\"'><i class=\"icon-home4\"></i><span>" . "Home" . "</span></a></li>";
-echo "<li><a href='#' onmouseup='check_content(\"Ajax.php?modname=miscellaneous/Portal.php\");' onmousedown='document.getElementById(\"header\").innerHTML = \"Home\";document.getElementById(\"cframe\").src = \"Bottom.php?modcat=home\"'><i class=\"icon-home4\"></i><span>" . "Home" . "</span></a></li>";
+echo "<li><a href='#' onmouseup='check_content(\"Ajax.php?modname=miscellaneous/Portal.php\");' onmousedown='document.getElementById(\"header\").innerHTML = \"Home\";document.getElementById(\"cframe\").src = \"Bottom.php?modcat=home\"'><i class=\"icon-home4\"></i><span>" ._home . "</span></a></li>";
 foreach ($_openSIS['Menu'] as $modcat => $programs) {
     if (count($_openSIS['Menu'][$modcat])) {
         $keys = array_keys($_openSIS['Menu'][$modcat]);
@@ -643,24 +674,24 @@ foreach ($_openSIS['Menu'] as $modcat => $programs) {
 
 
         if (User('PROFILE') != 'admin' && $modcat == "schoolsetup") {
-            echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>School Info</span></a>";
+            echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>"._schoolInfo."</span></a>";
         } elseif (User('PROFILE') != 'admin' && $modcat == "users") {
-            echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>My Info</span></a>";
+            echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>"._myInfo."</span></a>";
         } elseif (User('PROFILE') == 'student' && $modcat == "students") {
 
-            echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>My Info</span></a>";
+            echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>"._myInfo."</span></a>";
         } elseif (User('PROFILE') == 'student' && $modcat == "scheduling") {
-            echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>Schedule</span></a>";
+            echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>"._schedule."</span></a>";
         } elseif ($modcat == "messaging") {
-            echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>Messaging</span></a>";
+            echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>"._messaging."</span></a>";
         } else {
 
             if ($modcat == 'eligibility') {
-                echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>Extracurricular</span></a>";
+                echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>"._extracurricular."</span></a>";
             } elseif ($modcat == 'schoolsetup')
-                echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>School Setup</span></a>";
+                echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>"._schoolSetup."</span></a>";
             else {
-                echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>" . ucfirst(str_replace('_', ' ', $modcat)) . "</span></a>";
+                echo "<li " . (($current_mod == $modcat) ? 'class="active"' : '') . "><a HREF=javascript:void(0)><i class=\"{$menu_icons[$modcat]}\"></i><span>" . ucfirst(str_replace('_', ' ', constant('_'.$modcat))) . "</span></a>";
             }
         }
 
@@ -685,11 +716,11 @@ foreach ($_openSIS['Menu'] as $modcat => $programs) {
                     echo "<li><A HREF=$file target=_blank>$title</A>";
                 elseif (!is_numeric($file))
                     if (User('PROFILE') == 'student' && $title == "Student Info") {
-                        echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ucwords($modcat) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">My Info</A>";
+                        echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ucwords(constant($modcat)) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">My Info</A>";
                     } elseif (User('PROFILE') == 'student' && $title == "Schedule") {
-                        echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ucwords($modcat) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">My Schedule</A>";
+                        echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ucwords(constant($modcat)) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">My Schedule</A>";
                     } elseif (User('PROFILE') == 'student' && $title == "Student Requests") {
-                        echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ucwords($modcat) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">My Requests</A>";
+                        echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ucwords(constant($modcat)) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">My Requests</A>";
                     } else {
 
                         if ($modcat == 'eligibility')
@@ -697,11 +728,11 @@ foreach ($_openSIS['Menu'] as $modcat => $programs) {
                         else {
                             if (User('PROFILE_ID') != 0 && User('PROFILE') == 'admin') {
                                 if ($modcat == 'tools' && $title != 'Backup Database')
-                                    echo "<li  " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ucwords($modcat) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . str_replace('&', '?', $file) . "';\">$title</A>";
+                                    echo "<li  " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ucwords(constant($modcat)) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . str_replace('&', '?', $file) . "';\">$title</A>";
                                 if ($modcat != 'tools')
-                                    echo "<li  " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ($modcat == 'schoolsetup' ? 'School Setup' : ucwords($modcat)) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . str_replace('&', '?', $file) . "';\">$title</A>";
+                                    echo "<li  " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ($modcat == 'schoolsetup' ? schoolSetup : ucwords(constant($modcat))) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . str_replace('&', '?', $file) . "';\">$title</A>";
                             } else
-                                echo "<li  " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='$(\"#header\").html(\"" . ($modcat == 'schoolsetup' ? 'School Setup' : ucwords($modcat)) . " <i class=icon-arrow-right5></i> " . $title."\");' onmouseup=\"$('#cframe').attr('src','Bottom.php?modname=" . str_replace('&', '?', $file) . "');\">$title</A>";
+                                echo "<li  " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=hm HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='$(\"#header\").html(\"" . ($modcat == 'schoolsetup' ? schoolSetup : ucwords(constant($modcat))) . " <i class=icon-arrow-right5></i> " . $title."\");' onmouseup=\"$('#cframe').attr('src','Bottom.php?modname=" . str_replace('&', '?', $file) . "');\">$title</A>";
                         }
                     }
                 elseif ($keys[$key_index + 1] && !is_numeric($keys[$key_index + 1])) {
@@ -733,14 +764,14 @@ foreach ($_openSIS['Menu'] as $modcat => $programs) {
 
                         if (User('PROFILE_ID') != 0 && User('PROFILE') == 'admin') {
                             if ($modcat == 'tools' && $title != 'At a Glance' && $title != 'Institute Reports' && $title != 'Institute Custom Field Reports')
-                                echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=dd HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ucwords($modcat) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">$title</A>";
+                                echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=dd HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ucwords(constant($modcat)) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">$title</A>";
                             //                                            
                             if ($modcat != 'tools') {
 
-                                echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=dd HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ($modcat == 'schoolsetup' ? 'School Setup' : ucwords($modcat)) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">$title</A>";
+                                echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=dd HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ($modcat == 'schoolsetup' ? schoolSetup : ucwords(constant($modcat))) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">$title</A>";
                             }
                         } else
-                            echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=dd HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ($modcat == 'schoolsetup' ? 'School Setup' : ucwords($modcat)) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">$title</A>";
+                            echo "<li " . (($current_menu == $title) ? 'class="current-submenu"' : '') . "><A id=dd HREF=javascript:void(0) onClick='check_content(\"Ajax.php?modname=" . $file . " \");'  onmousedown='document.getElementById(\"header\").innerHTML = \"" . ($modcat == 'schoolsetup' ? schoolSetup : ucwords(constant($modcat))) . " <i class=\"icon-arrow-right5\"></i> " . "$title\"' onmouseup=\"document.getElementById('cframe').src='Bottom.php?modname=" . $file . "';\">$title</A>";
                     }
                 }
                 elseif ($keys[$key_index + 1] && !is_numeric($keys[$key_index + 1])) {
@@ -960,6 +991,30 @@ if ($_REQUEST['modname'] || $_GET['modname']) {
             }
         }
     }
+    
+
+    ##### REMOVE FILES FROM ROOT - START #####
+
+    $check_backups = DBGet(DBQuery("SELECT * FROM `program_config` WHERE `program` = 'DB_BACKUP'"));
+
+    if(!empty($check_backups))
+    {
+        foreach($check_backups as $each_backups)
+        {
+            $filename = $each_backups['TITLE'].'.sql';
+
+            if(file_exists($filename))
+            {
+                unlink($filename);
+
+                DBQuery("DELETE FROM `program_config` WHERE `program` = 'DB_BACKUP' AND `value` = '".$each_backups['VALUE']."'");
+            }
+        }
+    }
+
+    ##### REMOVE FILES FROM ROOT - END #####
+    
+
     if (optional_param('modname', '', PARAM_NOTAGS) == 'users/TeacherPrograms.php?include=attendance/TakeAttendance.php')
         $allowed = true;
     if (optional_param('modname', '', PARAM_NOTAGS) == 'ParentLookup.php')
@@ -971,6 +1026,8 @@ if ($_REQUEST['modname'] || $_GET['modname']) {
     if (optional_param('modname', '', PARAM_NOTAGS) == 'users/UploadUserPhoto.php?modfunc=edit')
         $allowed = true;
     if (optional_param('modname', '', PARAM_NOTAGS) == 'students/Upload.php')
+        $allowed = true;
+    if (optional_param('modname', '', PARAM_NOTAGS) == 'students/StudentFilters.php')
         $allowed = true;
     if (optional_param('modname', '', PARAM_NOTAGS) == 'students/Upload.php?modfunc=edit')
         $allowed = true;
@@ -988,7 +1045,7 @@ if ($_REQUEST['modname'] || $_GET['modname']) {
     }
     else {
         if (User('USERNAME')) {
-            echo "You're not allowed to use this program! This attempted violation has been logged and your IP address was captured.";
+            echo ""._youReNotAllowedToUseThisProgram."! "._thisAttemptedViolationHasBeenLoggedAndYourIpAddressWasCaptured.".";
             Warehouse('footer');
 
             if ($_SERVER['HTTP_X_FORWARDED_FOR']) {
@@ -1068,7 +1125,7 @@ echo '</div>
                 <div class="row">
                     <div class="col-md-9">
                         <div class="navbar-text">
-                            openSIS is a product of Open Solutions for Education, Inc. (<a href="http://www.os4ed.com" target="_blank">OS4ED</a>) and is licensed under the <a href="http://www.gnu.org/licenses/gpl.html" target="_blank">GPL license</a>.
+                            '._footerText.'
                         </div>
                     </div>
                     <div class="col-md-3">

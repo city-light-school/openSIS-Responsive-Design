@@ -27,6 +27,9 @@
 #
 #***************************************************************************************
 include('../../RedirectModulesInc.php');
+
+if ($_SESSION['staff_id']== '' && $_REQUEST['staff_id'] != 'new')
+        $_SESSION['staff_id'] = $_REQUEST['staff_id'];
 if (isset($_REQUEST['custom_date_id']) && count($_REQUEST['custom_date_id']) > 0) {
     foreach ($_REQUEST['custom_date_id'] as $custom_id) {
         $_REQUEST['staff']['CUSTOM_' . $custom_id] = $_REQUEST['year_CUSTOM_' . $custom_id] . '-' . MonthFormatter($_REQUEST['month_CUSTOM_' . $custom_id]) . '-' . $_REQUEST['day_CUSTOM_' . $custom_id];
@@ -56,18 +59,81 @@ if ($_REQUEST['month_values']['JOINING_DATE'] != '' && $_REQUEST['day_values']['
 }
 
 $show_title = '';
+                if(UserStaffID() !='')    
+                {
+                    
+                        
+  if ($_REQUEST['v'] && isset($_REQUEST['staff_id'])) {
+
+
+
+                $val = optional_param('v', 0, PARAM_INT);
+              
+                if ($val == 1) {
+                    unset($_SESSION['staff_id']);
+                    $_SESSION['staff_id'] = $_SESSION['staff_order'][1];
+                }
+                if ($val == 2) {
+                    $final_pos = array_search($_SESSION['staff_id'], $_SESSION['staff_order']);
+                     $final_pos = $final_pos - 1;
+                    unset($_SESSION['staff_id']);
+                    $_SESSION['staff_id'] = $_SESSION['staff_order'][$final_pos];
+                }
+                if ($val == 3) {
+                    $final_pos = array_search($_SESSION['staff_id'], $_SESSION['staff_order']);
+                    $final_pos = $final_pos + 1;
+                    unset($_SESSION['staff_id']);
+                    $_SESSION['staff_id'] = $_SESSION['staff_order'][$final_pos];
+                }
+                if ($val == 4) {
+                    unset($_SESSION['staff_id']);
+                    $final_pos = count($_SESSION['staff_order']);
+                    $_SESSION['staff_id'] = $_SESSION['staff_order'][$final_pos];
+                }
+                
+            }
+            $val = $_REQUEST['v'];
+                        $count = array_search($_SESSION['staff_id'], $_SESSION['staff_order']);
+                         $_SESSION['count_staff'] = $count;
+                        $_SESSION['total_staff'] = count($_SESSION['staff_order']);
+                        $last_stu = count($_SESSION['staff_order']);
+                        $last_stu = $_SESSION['staff_order'][$last_stu];
+                        echo '<div class="row">';
+                        echo '<div class="col-md-12 text-right">';
+                        echo "<p>"._showing." " . (count($_SESSION['staff_order']) > 1 ? $_SESSION['count_staff'] : '1') . " "._showing." " . (count($_SESSION['staff_order']) > 1 ? $_SESSION['total_staff'] : '1') . " &nbsp; ";
+
+                        if (count($_SESSION['staff_order']) > 1) {
+                            if (UserStaffID() != $_SESSION['staff_order'][1]) {
+                                echo "<span class='pg-prev' style='margin-right:10px; font-size:14px; font-weight:normal;'><A HREF=Modules.php?modname=users/Staff.php&v=1&staff_id=" . UserStaffID() . " ><i class=\"icon-first\"></i> "._first."</A></span>";
+
+                                echo "<span class='pg-prev' style='margin-right:10px; font-size:14px; font-weight:normal;'><A HREF=Modules.php?modname=users/Staff.php&v=2&staff_id=" . UserStaffID() . " > <i class=\"icon-backward2\"></i> "._previous."</A></span>";
+                            }
+                            if (UserStaffID() != $last_stu) {
+
+                                echo "<span class='pg-nxt' style='margin-left:10px; font-size:14px; font-weight:normal;'><A HREF=Modules.php?modname=users/Staff.php&v=3&staff_id=" . UserStaffID() . " >"._next." <i class=\"icon-forward3\"></i></A></span>";
+
+                                echo "<span class='pg-nxt' style='margin-left:10px; font-size:14px; font-weight:normal;'><A HREF=Modules.php?modname=users/Staff.php&v=4&staff_id=" . UserStaffID() . " >"._last." <i class=\"icon-last\"></i></A></span>";
+                            }
+                        }
+                        
+                        echo '</div>';
+                        echo '</div>';
+                        
+                        }
+                        
+                       
 if (isset($_REQUEST['staff_id']) && $_REQUEST['staff_id'] != 'new') {
     $show_title = 'y';
-
+$_REQUEST['staff_id']=$_SESSION['staff_id'];
     $RET = DBGet(DBQuery("SELECT FIRST_NAME,LAST_NAME FROM staff WHERE STAFF_ID='" . $_REQUEST['staff_id'] . "'"));
     $count_staff_RET = DBGet(DBQuery("SELECT COUNT(*) AS NUM FROM staff"));
     if ($count_staff_RET[1]['NUM'] > 1) {
         echo '<div class="panel panel-default">';
-        DrawHeader('Selected Staff : ' . $RET[1]['FIRST_NAME'] . '&nbsp;' . $RET[1]['LAST_NAME'], '<span class="heading-text"><A HREF=Modules.php?modname=' . $_REQUEST['modname'] . '&search_modfunc=list&next_modname=users/User.php&ajax=true&bottom_back=true&return_session=true target=body><i class="icon-square-left"></i> Back to User List</A></span><div class="btn-group heading-btn"><A HREF=Side.php?staff_id=new&modcat=' . $_REQUEST['modcat'] . ' class="btn btn-danger btn-xs">Deselect</A></div>');
+        DrawHeader(''._selectedStaff.' : ' . $RET[1]['FIRST_NAME'] . '&nbsp;' . $RET[1]['LAST_NAME'], '<span class="heading-text"><A HREF=Modules.php?modname=' . $_REQUEST['modname'] . '&search_modfunc=list&next_modname=users/User.php&ajax=true&bottom_back=true&return_session=true target=body><i class="icon-square-left"></i> '._backToUserList.'</A></span><div class="btn-group heading-btn"><A HREF=Side.php?staff_id=new&modcat=' . $_REQUEST['modcat'] . ' class="btn btn-danger btn-xs">'._deselect.'</A></div>');
         echo '</div>';
     } else {
         echo '<div class="panel panel-default">';
-        DrawHeader('Selected Staff : ' . $RET[1]['FIRST_NAME'] . '&nbsp;' . $RET[1]['LAST_NAME'], '<div class="btn-group heading-btn"><A HREF=Side.php?staff_id=new&modcat=' . $_REQUEST['modcat'] . ' class="btn btn-danger btn-xs">Deselect</A></div>');
+        DrawHeader(''._selectedStaff.' : ' . $RET[1]['FIRST_NAME'] . '&nbsp;' . $RET[1]['LAST_NAME'], '<div class="btn-group heading-btn"><A HREF=Side.php?staff_id=new&modcat=' . $_REQUEST['modcat'] . ' class="btn btn-danger btn-xs">'._deselect.'</A></div>');
         echo '</div>';
     }
 }
@@ -77,11 +143,11 @@ if (UserStaffID() != '' && $show_title != 'y' && $title_set_staff != 'y') {
         $count_staff_RET = DBGet(DBQuery("SELECT COUNT(*) AS NUM FROM staff"));
         if ($count_staff_RET[1]['NUM'] > 1) {
             echo '<div class="panel panel-default">';
-            DrawHeader('Selected Staff : ' . $RET[1]['FIRST_NAME'] . '&nbsp;' . $RET[1]['LAST_NAME'], '<span class="heading-text"><A HREF=Modules.php?modname=' . $_REQUEST['modname'] . '&search_modfunc=list&next_modname=users/User.php&ajax=true&bottom_back=true&return_session=true target=body><i class="icon-square-left"></i> Back to User List</A></span><div class="btn-group heading-btn"><A HREF=Side.php?staff_id=new&modcat=' . $_REQUEST['modcat'] . ' class="btn btn-danger btn-xs">Deselect</A></div>');
+            DrawHeader(''._selectedStaff.' : ' . $RET[1]['FIRST_NAME'] . '&nbsp;' . $RET[1]['LAST_NAME'], '<span class="heading-text"><A HREF=Modules.php?modname=' . $_REQUEST['modname'] . '&search_modfunc=list&next_modname=users/User.php&ajax=true&bottom_back=true&return_session=true target=body><i class="icon-square-left"></i> '._backToUserList.'</A></span><div class="btn-group heading-btn"><A HREF=Side.php?staff_id=new&modcat=' . $_REQUEST['modcat'] . ' class="btn btn-danger btn-xs">'._deselect.'</A></div>');
             echo '</div>';
         } else {
             echo '<div class="panel panel-default">';
-            DrawHeader('Selected Staff : ' . $RET[1]['FIRST_NAME'] . '&nbsp;' . $RET[1]['LAST_NAME'], '<div class="btn-group heading-btn"><A HREF=Side.php?staff_id=new&modcat=' . $_REQUEST['modcat'] . ' class="btn btn-danger btn-xs">Deselect</A></div>');
+            DrawHeader(''._selectedStaff.' : ' . $RET[1]['FIRST_NAME'] . '&nbsp;' . $RET[1]['LAST_NAME'], '<div class="btn-group heading-btn"><A HREF=Side.php?staff_id=new&modcat=' . $_REQUEST['modcat'] . ' class="btn btn-danger btn-xs">'._deselect.'</A></div>');
             echo '</div>';
         }
     }
@@ -120,7 +186,7 @@ if (User('PROFILE') != 'admin') {
     if (User('PROFILE_ID'))
         $can_edit_RET = DBGet(DBQuery("SELECT MODNAME FROM profile_exceptions WHERE PROFILE_ID='" . User('PROFILE_ID') . "' AND MODNAME='users/User.php&category_id=$_REQUEST[category_id]' AND CAN_EDIT='Y'"));
     else {
-        $profile_id_mod = DBGet(DBQuery("SELECT PROFILE_ID FROM staff WHERE USER_ID='" . User('STAFF_ID')));
+        $profile_id_mod = DBGet(DBQuery("SELECT PROFILE_ID FROM staff WHERE USER_ID='" . User('STAFF_ID')."'"));
         $profile_id_mod = $profile_id_mod[1]['PROFILE_ID'];
         if ($profile_id_mod != '')
             $can_edit_RET = DBGet(DBQuery("SELECT MODNAME FROM profile_exceptions WHERE PROFILE_ID='" . $profile_id_mod . "' AND MODNAME='users/User.php&category_id=$_REQUEST[category_id]' AND CAN_EDIT='Y'"), array(), array('MODNAME'));
@@ -164,7 +230,7 @@ if ($_REQUEST['category_id'] == 4 && !isset($_REQUEST['certification_id'])) {
 }
 if (clean_param($_REQUEST['modfunc'], PARAM_ALPHAMOD) == 'update') {
 
-    if ($_REQUEST['values']['SCHOOLS']) {
+if (count($_REQUEST['values']['SCHOOLS'])>0) {
         $school_array = $_REQUEST['values']['SCHOOLS'];
         $cur_school = array_keys($school_array);
         if ($_REQUEST['staff_id'] == 'new')
@@ -245,7 +311,7 @@ if (clean_param($_REQUEST['modfunc'], PARAM_ALPHAMOD) == 'update') {
 //                        }
 
                 foreach ($_REQUEST['staff'] as $column_name => $value) {
-                    if ($column_name == 'BIRTHDATE')
+                    if ($column_name == 'BIRTHDATE' && $value!='')
                         $value = date("Y-m-d", strtotime($value));
                     if ($column_name == 'SCHOOLS')
                         continue;
@@ -263,7 +329,7 @@ if (clean_param($_REQUEST['modfunc'], PARAM_ALPHAMOD) == 'update') {
                                 echo "<font color=red><b>Unable to save data, because " . $custom_TITLE . ' is required.</b></font><br/>';
                             else
                                 echo "<font color=red><b>Unable to save data, because " . $custom_TITLE . ' is required.</b></font><br/>';
-                            //$error=true;
+                            //$error= true;
                         }else {
 
                             $custom_id = str_replace("CUSTOM_", "", $column_name);
@@ -321,7 +387,7 @@ if (clean_param($_REQUEST['modfunc'], PARAM_ALPHAMOD) == 'update') {
                         foreach ($chk_assoc_cp as $chk_assoc_cp_k => $chk_assoc_cp_v) {
 
                             $new_title = $chk_assoc_cp_v['SHORT_NAME'] . '-' . $new_tec_name;
-                            $update_cp_title = DBQuery('UPDATE  course_periods SET TITLE=\'' . $new_title . '\' WHERE  course_period_id=' . $chk_assoc_cp_v['COURSE_PERIOD_ID']);
+                            $update_cp_title = DBQuery('UPDATE  course_periods SET TITLE=\'' . singleQuoteReplace('', '',$new_title) . '\' WHERE  course_period_id=' . $chk_assoc_cp_v['COURSE_PERIOD_ID']);
 
                             unset($new_title);
                         }
@@ -437,7 +503,7 @@ if (clean_param($_REQUEST['modfunc'], PARAM_ALPHAMOD) == 'update') {
             unset($_REQUEST['year_staff']);
             
             foreach ($_REQUEST['staff'] as $column => $value) {
-                if ($column == 'BIRTHDATE')
+                if ($column == 'BIRTHDATE' && $value!='')
                 {
                     $value = date("Y-m-d", strtotime($value));
                    
@@ -479,9 +545,9 @@ if (clean_param($_REQUEST['modfunc'], PARAM_ALPHAMOD) == 'update') {
                     $fields .= $column . ',';
                     if ($column == 'FIRST_NAME' || $column == 'LAST_NAME') {
                         if (stripos($_SERVER['SERVER_SOFTWARE'], 'linux')) {
-                            $values .= "'" . $value . " ',";
+                            $values .= "'" . trim($value) . "',";
                         } else
-                            $values .= "'" . $value . " ',";
+                            $values .= "'" . trim($value) . "',";
                     }
                     else {
                         if (stripos($_SERVER['SERVER_SOFTWARE'], 'linux')) {
@@ -495,6 +561,7 @@ if (clean_param($_REQUEST['modfunc'], PARAM_ALPHAMOD) == 'update') {
          $sql .= '(' . substr($fields, 0, -1) . ') values(' . substr($values, 0, -1) . ')';
 
             if ($error != true) {
+                //echo $sql;exit;
                 DBQuery($sql);
                 // possible modification start
                 $staff_id = DBGet(DBQuery("select max(staff_id) as id from staff"));
@@ -615,17 +682,17 @@ if (clean_param($_REQUEST['modfunc'], PARAM_ALPHAMOD) == 'update') {
 }
 
 $extra['SELECT'] = ',LAST_LOGIN';
-$extra['columns_after'] = array('LAST_LOGIN' => 'Last Login');
+$extra['columns_after'] = array('LAST_LOGIN' =>_lastLogin);
 $extra['functions'] = array('LAST_LOGIN' => 'makeLogin');
 
 if (basename($_SERVER['PHP_SELF']) != 'index.php') {
     if ($_REQUEST['staff_id'] == 'new')
-        DrawBC("Users > Add a User");
+        DrawBC(""._users." > Add a User");
     else
-        DrawBC("Users > " . ProgramTitle());
+        DrawBC(""._users." > " . ProgramTitle());
     SearchStaff('staff_id', $extra);
 } else
-    DrawHeader('Create Account');
+    DrawHeader(_createAccount);
 if ($_REQUEST['modfunc'] == 'delete' && basename($_SERVER['PHP_SELF']) != 'index.php' && AllowEdit()) {
 
     # ------------------------------------  For Certification Start ------------------------------------------- #
@@ -665,7 +732,7 @@ if ((UserStaffID() || $_REQUEST['staff_id'] == 'new') && ((basename($_SERVER['PH
             if (User('PROFILE_ID') != '') {
                 $can_use_RET = DBGet(DBQuery("SELECT MODNAME FROM profile_exceptions WHERE PROFILE_ID='" . User('PROFILE_ID') . "' AND CAN_USE='Y'"), array(), array('MODNAME'));
             } else {
-                $profile_id_mod = DBGet(DBQuery("SELECT PROFILE_ID FROM staff WHERE USER_ID='" . User('STAFF_ID')));
+                $profile_id_mod = DBGet(DBQuery("SELECT PROFILE_ID FROM staff WHERE USER_ID='" . User('STAFF_ID') . "'"));
                 $profile_id_mod = $profile_id_mod[1]['PROFILE_ID'];
                 if ($profile_id_mod != '') {
                     $can_use_RET = DBGet(DBQuery("SELECT MODNAME FROM profile_exceptions WHERE PROFILE_ID='" . $profile_id_mod . "' AND CAN_USE='Y'"), array(), array('MODNAME'));
@@ -677,6 +744,7 @@ if ((UserStaffID() || $_REQUEST['staff_id'] == 'new') && ((basename($_SERVER['PH
 
         $tabs = array();
         foreach ($categories_RET as $category) {
+            // print_r($categories_RET);
             if ($can_use_RET['users/Staff.php&category_id=' . $category['ID']]) {
                 if ($category['ID'] == '1')
                     $include = 'DemographicInfoInc';
@@ -695,8 +763,29 @@ if ((UserStaffID() || $_REQUEST['staff_id'] == 'new') && ((basename($_SERVER['PH
                     $include = $category['INCLUDE'];
                 else
                     $include = 'OtherInfoInc';
-
-                $tabs[] = array('title' => $category['TITLE'], 'link' => "Modules.php?modname=$_REQUEST[modname]&include=$include&custom=staff&category_id=" . $category['ID']);
+                switch ($category['TITLE'] ) {
+                    case 'Demographic Info':
+                        $categoryTitle = _demographicInfo;
+                        break;
+                    case 'Addresses &amp; Contacts':
+                        $categoryTitle = _addressesContacts;
+                        break;
+                    case 'School Information':
+                        $categoryTitle = _schoolInformation;
+                        break;
+                    case 'Certification Information':
+                        $categoryTitle = _certificationInformation;
+                        break;
+                    case 'Schedule':
+                        $categoryTitle = _schedule;
+                        break;
+                    default:
+                        $categoryTitle = $category['TITLE'];
+                }
+                // echo "$category[TITLE]<br>";
+                // // echo "<"
+                // echo "$categoryTitle<br>";
+                $tabs[] = array('title' => $categoryTitle, 'link' => "Modules.php?modname=$_REQUEST[modname]&include=$include&custom=staff&category_id=" . $category['ID']);
             }
         }
         unset($new_tabs);
@@ -704,15 +793,15 @@ if ((UserStaffID() || $_REQUEST['staff_id'] == 'new') && ((basename($_SERVER['PH
         unset($td);
         $swap_tabs = 'n';
         foreach ($tabs as $ti => $td) {
-            if ($td['title'] == 'School Information')
+            if ($td['title'] == _schoolInformation)
                 $swap_tabs = 'y';
         }
 
         if ($swap_tabs == 'y') {
             foreach ($tabs as $ti => $td) {
-                if ($td['title'] == 'Demographic Info')
+                if ($td['title'] == _demographicInfo)
                     $new_tabs[0] = $td;
-                elseif ($td['title'] == 'School Information')
+                elseif ($td['title'] == _schoolInformation)
                     $new_tabs[1] = $td;
                 else
                     $new_tabs[$ti + 1] = $td;
@@ -741,7 +830,7 @@ if ((UserStaffID() || $_REQUEST['staff_id'] == 'new') && ((basename($_SERVER['PH
         echo '<div id=prof_err></div>';
         echo '<div id=cat_err></div>';
         if (Count($tabs) == 0)
-            echo PopTable('header', 'Demographic Info');
+            echo PopTable('header',  _demographicInfo);
         else
             echo PopTable('header', $tabs, '');
         echo '<div id=sh_err></div>';
@@ -772,33 +861,33 @@ if ((UserStaffID() || $_REQUEST['staff_id'] == 'new') && ((basename($_SERVER['PH
 
             if ($_REQUEST['staff_id'] != 'new') {
                 if ($_REQUEST['category_id'] == 1 && ($username == '' || $password == '' || $this_school['JOINING_DATE'] == '')) {
-                    echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton('Save & Next', '', 'class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0);"') . '</div></div>';
+                    echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton(_saveNext, '', 'id="mod_staff_btn" class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0, this);"') . '</div></div>';
                 }
                 if ($_REQUEST['category_id'] == 1 && $username != '' && $password != '' && $this_school['JOINING_DATE'] != '') {
-                    echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton('Save', '', 'class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0);"') . '</div></div>';
+                    echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton(_save, '', 'id="mod_staff_btn" class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0, this);"') . '</div></div>';
                 }
                 if ($_REQUEST['category_id'] != 1) {
                     $btn_flag=1;
                     if(User('PROFILE')=='admin' && $_REQUEST['modname']=='users/Staff.php' && isset($_REQUEST['include']) && $_REQUEST['include']=='ScheduleInc')
                     $btn_flag=0;
                     if($btn_flag==1)
-                    echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton('Save', '', 'class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0);"') . '</div></div>';
+                    echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton(_save, '', 'id="mod_staff_btn" class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0, this);"') . '</div></div>';
                 }
             } else {
                 if ($_REQUEST['category_id'] != 3) {
-                    echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton('Save & Next', '', 'class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0);"') . '</div></div>';
+                    echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton(_saveNext, '', 'id="mod_staff_btn" class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0, this);"') . '</div></div>';
                 } else {
                     if ($_SESSION[staff_school_chkbox_id] != '') {
-                        echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton('Save', '', 'class="btn btn-primary pull-right" onClick="return formcheck_add_staff(' . $_SESSION[staff_school_chkbox_id] . ');"') . '</div></div>';
+                        echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton(_save, '', 'id="mod_staff_btn" class="btn btn-primary pull-right" onClick="return formcheck_add_staff(' . $_SESSION[staff_school_chkbox_id] . ', this);"') . '</div></div>';
                     } else
-                        echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton('Save', '', 'class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0);"') . '</div></div>';
+                        echo '<div class="panel-footer"><div class="heading-elements">' . SubmitButton(_save, '', 'id="mod_staff_btn" class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0, this);"') . '</div></div>';
                     unset($_SESSION[staff_school_chkbox_id]);
                 }
             }
         }
         elseif (User('PROFILE') == 'teacher') {
             if ($_REQUEST['include'] != 'ScheduleInc' && $_REQUEST['include'] != 'SchoolsInfoInc')
-                echo '<div class="panel-footer"><div class="heading-elements">'.SubmitButton('Save', '', 'class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0);"').'</div></div>';
+                echo '<div class="panel-footer"><div class="heading-elements">'.SubmitButton(_save, '', 'class="btn btn-primary pull-right" onClick="return formcheck_add_staff(0, this);"').'</div></div>';
         }
         echo '</FORM>';
     }

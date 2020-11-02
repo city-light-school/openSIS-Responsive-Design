@@ -26,32 +26,54 @@
 #
 #***************************************************************************************
 error_reporting(0);
+
+include('lang/supportedLanguages.php');
+
+if(isset($_REQUEST['language'])){
+    if(in_array($_REQUEST['language'], array_keys($supportedLanguages))){
+    $langCode2 = $_REQUEST['language'];
+    }
+} else if (isset($_COOKIE['remember_me_lang'])){
+    if(in_array($_COOKIE['remember_me_lang'], array_keys($supportedLanguages))){
+        $langCode2 = $_COOKIE['remember_me_lang'];
+}
+}
+
+if(!isset($langCode2)){
+    $langCode2 = 'en';
+}
+
+$_SESSION['language'] = $langCode2;
+
+include("lang/lang_".$_SESSION['language'].".php");
+
 include('RedirectRootInc.php');
 include("Data.php");
 include("Warehouse.php");
+// var_dump($_SESSION);
 $cont = db_start();
-//$connection=mysql_connect($DatabaseServer,$DatabaseUsername,$DatabasePassword);
-//mysql_select_db($DatabaseName,$connection);
 $log_msg = DBGet(DBQuery("SELECT MESSAGE FROM login_message WHERE DISPLAY='Y'"));
 $maintain_qr = DBGet(DBQuery('select system_maintenance_switch from system_preference_misc where system_maintenance_switch=\'Y\''));
-Warehouse('header');
-echo '<meta http-equiv="Content-type" content="text/html;charset=UTF-8">';
-echo '<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,400italic,600italic" rel="stylesheet" type="text/css">';
-echo '<link href="assets/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css">';
-//echo '<link href="styles/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet">';
-echo '<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">';
-echo '<link href="assets/css/extras/css-checkbox-switch.css" rel="stylesheet">';
-echo '<link rel="stylesheet" type="text/css" href="assets/css/login.css">';
-echo '<script type="text/javascript" src="js/Tabmenu.js"></script>';
-echo "<script type='text/javascript'>
+$extra_header  = '';
+$extra_header .= '<meta http-equiv="Content-type" content="text/html;charset=UTF-8">';
+$extra_header .= '<link href="assets/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css">';
+$extra_header .= '<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">';
+$extra_header .= '<link href="assets/css/extras/css-checkbox-switch.css" rel="stylesheet">';
+$extra_header .= '<link rel="stylesheet" type="text/css" href="assets/css/login.css">';
+$extra_header .= '<script type="text/javascript" src="js/Tabmenu.js"></script>';
+$extra_header .= "<script type='text/javascript'>
 	function delete_cookie (cookie_name)
 		{
   			var cookie_date = new Date ( );
   			cookie_date.setTime ( cookie_date.getTime() - 1 );
-			  document.cookie = cookie_name += \"=; expires=\" + cookie_date.toGMTString();
+			  document.cookie = cookie_name += \"= _; expires=\" + cookie_date.toGMTString();
 		}
 
 </script>";
+Warehouse('header', $extra_header);
+require_once('functions/langFnc.php');
+// var_dump(langDirection());
+// var_dump($supportedLanguages[$_SESSION['language']]['direction']);
 ?>
 
 <BODY onLoad="document.loginform.USERNAME.focus();
@@ -63,6 +85,7 @@ echo "<script type='text/javascript'>
             <li id="min"></li>
         </ul>
         <div id="Date"></div>
+
     </div>
     <section class="login">
         <div class="login-wrapper">
@@ -70,13 +93,10 @@ echo "<script type='text/javascript'>
             <div class="panel">
 
                 <div class="panel-heading">
-                    <!-- <div class="logo">
+                    <div class="logo">
                         <img src="assets/images/opensis_logo.png" alt="openSIS" />
-                    </div>                    -->
-										<div class="logo text-center">
-											<img width="60%"src="data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTMyIj48dGl0bGU+Q0xTIExvZ28gKG9mZmljaWFsMSlfQXJ0Ym9hcmQgMWI8L3RpdGxlPjxwYXRoIGQ9Ik0xMjAuOCwxMzJINDMuNDdRMjAsMTMyLDIwLDExMC4zN1Y2OS42M1EyMCw0OCw0My40Nyw0OEgxMjAuOFY2MC41MUg2MS40MmMtNCwwLTYuNzQsMi42Mi02Ljc0LDYuNDN2NDYuMTJjMCwzLjgxLDIuNzksNi40Myw2Ljc0LDYuNDNIMTIwLjhaIi8+PHBhdGggZD0iTTE2NS45LDkuMzVWMEgxNDYuNDdWOS4zNUgxNDNWMTIwaDM0VjkuMzVaTTE1MS4zMywxMDZoLTQuODZ2LTUuNDVoNC44NlptMC03Ljc5aC00Ljg2VjkyLjczaDQuODZabTAtMTUuNThoLTQuODZWNzcuMTRoNC44NlptMC03Ljc5aC00Ljg2VjY5LjM1aDQuODZabTAtNy44aC00Ljg2VjYxLjU2aDQuODZabTAtNy43OWgtNC44NlY1My43N2g0Ljg2Wm0wLTE1LjU4aC00Ljg2VjM4LjE4aDQuODZabTAtNy44aC00Ljg2VjMwLjM5aDQuODZabTAtNy43OWgtNC44NlYyMi42aDQuODZabTYuOTQsNzAuMTNIMTU0LjFWOTIuNzNoNC4xN1ptMC03Ljc5SDE1NC4xVjg0Ljk0aDQuMTdabTAtNy43OUgxNTQuMVY3Ny4xNGg0LjE3Wm0wLTcuNzlIMTU0LjFWNjkuMzVoNC4xN1ptMC03LjhIMTU0LjFWNjEuNTZoNC4xN1ptMC03Ljc5SDE1NC4xVjUzLjc3aDQuMTdabTAtNy43OUgxNTQuMVY0Nmg0LjE3Wm0wLTcuNzlIMTU0LjFWMzguMThoNC4xN1ptMC0xNS41OUgxNTQuMVYyMi42aDQuMTdaTTE2NS45LDEwNmgtNC4xN3YtNS40NWg0LjE3Wm0wLTcuNzloLTQuMTdWOTIuNzNoNC4xN1ptMC03Ljc5aC00LjE3Vjg0Ljk0aDQuMTdabTAtNy43OWgtNC4xN1Y3Ny4xNGg0LjE3Wm0wLTE1LjU5aC00LjE3VjYxLjU2aDQuMTdabTAtNy43OWgtNC4xN1Y1My43N2g0LjE3Wm0wLTcuNzloLTQuMTdWNDZoNC4xN1ptMC03Ljc5aC00LjE3VjM4LjE4aDQuMTdabTAtNy44aC00LjE3VjMwLjM5aDQuMTdabTAtNy43OWgtNC4xN1YyMi42aDQuMTdaTTE3Mi44NCwxMDZoLTQuMTd2LTUuNDVoNC4xN1ptMC0xNS41OGgtNC4xN1Y4NC45NGg0LjE3Wm0wLTcuNzloLTQuMTdWNzcuMTRoNC4xN1ptMC03Ljc5aC00LjE3VjY5LjM1aDQuMTdabTAtNy44aC00LjE3VjYxLjU2aDQuMTdabTAtNy43OWgtNC4xN1Y1My43N2g0LjE3Wm0wLTcuNzloLTQuMTdWNDZoNC4xN1ptMC03Ljc5aC00LjE3VjM4LjE4aDQuMTdabTAtMTUuNTloLTQuMTdWMjIuNmg0LjE3WiIvPjxwYXRoIGQ9Ik0zMDAsMTE0cTAsMTgtMjEuODYsMThIMTk5LjJWMTE5LjQ5aDYyLjE3cTYuNiwwLDYuNi01LjU0di01cTAtNS4xOC03LjE2LTUuMThoLTQyLjJxLTE5LjQxLDAtMTkuNDEtMjIuMTZ2LTEyUTE5OS4yLDQ4LDIxOC42MSw0OEgzMDBWNjAuNTFIMjM2LjY5cS01LjQ2LDAtNS40Niw0LjY1djQuNDdxMCw0LjgyLDUuNDYsNC44Mmg0MS40NVEzMDAsNzQuNDUsMzAwLDkyLjY4WiIvPjxyZWN0IHg9IjExMC41IiB5PSIxMTkuNDkiIHdpZHRoPSI5OSIgaGVpZ2h0PSIxMi41MSIvPjwvc3ZnPg=="/>
-										</div>
-										<h3>Student Information System</h3>
+                    </div>
+                    <h3><?= _studentInformationSystem ?></h3>
                 </div>
                 <div class="panel-body">
 
@@ -102,7 +122,7 @@ echo "<script type='text/javascript'>
                             ?>
                             <form name=loginform method='post' class="text-left" action='index.php'>
                                 <?php
-                                if($maintain_qr[1]['SYSTEM_MAINTENANCE_SWITCH']=='Y'){
+                                if ($maintain_qr[1]['SYSTEM_MAINTENANCE_SWITCH'] == 'Y') {
                                     ?>
                                     <div class="form-group">
                                         <h4 class="text-center text-danger"><i class="icon-warning22" style="font-size: 50px;"></i><br/><br/>openSIS is under maintenance and login privileges have been turned off. Please log in when it is available again.</h4>
@@ -119,47 +139,68 @@ echo "<script type='text/javascript'>
                                     </div>
                                     <?php
                                 }
-
                                 ?>
                                 <div class="form-group">
                                     <?php
                                     if (isset($_COOKIE['remember_me_name']))
-								        $name = mysqli_real_escape_string($cont, strip_tags(trim($_COOKIE['remember_me_name'])));
-								    if (isset($_SESSION['fill_username'])) {
-								        $name = $_SESSION['fill_username'];
-								        unset($_SESSION['fill_username']);
-								    }
+                                        $name = mysqli_real_escape_string($cont, strip_tags(trim($_COOKIE['remember_me_name'])));
+                                    if (isset($_SESSION['fill_username'])) {
+                                        $name = $_SESSION['fill_username'];
+                                        unset($_SESSION['fill_username']);
+                                    }
                                     ?>
-                                    <input type="text" class="form-control username" id="username" placeholder="Enter Username" name='USERNAME' value="<?php echo $name; ?>" >
+                                    <input type="text" class="form-control username" id="username" placeholder="<?=_enterUsername?>" name='USERNAME' value="<?php echo $name; ?>">
                                 </div>
                                 <div class="form-group">
                                     <?php
                                     if (isset($_COOKIE['remember_me_pwd']))
-        $pwd = mysqli_real_escape_string($cont, strip_tags(trim($_COOKIE['remember_me_pwd'])));
+                                        $pwd = mysqli_real_escape_string($cont, strip_tags(trim($_COOKIE['remember_me_pwd'])));
                                     ?>
-                                    <input type="password" class="form-control password" placeholder="Enter Password" id="password" name='PASSWORD' AUTOCOMPLETE = 'off' value="<?php echo $pwd; ?>">
+                                    <input type="password" class="form-control password" placeholder="<?=_enterPassword?>" id="password" name='PASSWORD' AUTOCOMPLETE='off' value="<?php echo $pwd; ?>">
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12 text-center">
+                               <div class="language-selection">
+                                    <i class="icon-earth"></i>
+                                        <select class="select-search" name="language" id="language" onchange="window.location = 'index.php?language='+this.value">
+                                        <?php
+                                            foreach ($supportedLanguages as $code => $value) {
+                                                echo "<option value='$code' ".($langCode2 == $code ? 'selected' : '')." >$value[name]</option>";
+                                            }
+                                        ?>
+                                        </select>
+                                    </div>
+                                    <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group text-center">
                                         <div class="checkbox checkbox-switch switch-success switch-sm">
                                             <label>
-                                                <input type="checkbox" name="remember" id="remember" <?php
-                                                if (isset($_COOKIE['remember_me_name'])) {
-                                                    echo 'checked="checked"';
-                                                } else {
-                                                    echo '';
-                                                }
-                                                ?> /><span></span> Remember Me
+                                                <input type="checkbox" name="remember" id="remember" <?php echo (isset($_COOKIE['remember_me_name'])) ? 'checked="checked"' : ''; ?> /><span></span> <?=_rememberMe?>
                                             </label>
                                         </div>
                                     </div>
                                 </div>
-                                <br/>
-                                <p>
-                                    <button name='log' type="submit" class="btn btn-success btn-lg btn-block" onMouseDown="set_ck();Set_Cookie('dhtmlgoodies_tab_menu_tabIndex', '', -1)">Login</button>
-                                </p>
-                                <p class="text-center"><a href="ForgotPass.php">Forgot Username / Password?</a></p>
+                                <div class="col-md-12 text-center">
+                                    <p>
+                                        <a href="ForgotPass.php" id="forgotPass"><?=_forgotUsernamePassword?>?</a>
+                                    </p>
+                                                                    </div>
+                                </div>
+                                <div class="row">
+                                <div class="col-md-12">
+                                    <button name='log' type="submit" class="btn btn-success btn-lg btn-block" onMouseDown="set_ck();
+                                            Set_Cookie('dhtmlgoodies_tab_menu_tabIndex', '', -1)"><?=_login?></button>
 
+                                </div>
+                                </div>
+                                <script type="text/javascript">
+                                    document.getElementById("forgotPass").onclick = function() {
+                                        var link = document.getElementById("forgotPass");
+                                        var language = document.getElementById("language");
+                                        // console.log(language);
+                                        var href = link.href;
+                                        link.setAttribute("href", href+"?language="+language.value);
+                                        // return false;
+                                    }
+                                </script>
                             </form>
                         </div>
                     </div>
@@ -171,11 +212,12 @@ echo "<script type='text/javascript'>
                     <div class="loader loader4"></div>
                 </div>
                 <!--<div class="panel-footer">
-                <?php //echo $log_msg[1]['MESSAGE']; ?>
+                <?php //echo $log_msg[1]['MESSAGE'];  ?>
                 </div>-->
             </div>
             <footer>
-               openSIS is a product of Open Solutions for Education, Inc. (<a href="http://www.os4ed.com">OS4ED</a>) and is licensed under the <a href="http://www.gnu.org/licenses/gpl.html" target="_blank">GPL license</a>.
+                <!-- openSisIsAProductOfOpenSolutionsForEducationInc. (<a href="http://www.os4ed.com">OS4ED</a>) and is licensed under the <a href="http://www.gnu.org/licenses/gpl.html" target="_blank">GPL license</a>. -->
+                <?= _footerText ?>
             </footer>
 
         </div>
@@ -183,12 +225,18 @@ echo "<script type='text/javascript'>
 
 
     <script src="assets/js/core/libraries/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/js/plugins/forms/selects/select2.min.js"></script>
 
     <script type="text/javascript">
-                                        $(document).ready(function () {
+        $(document).ready(function() {
 
-                                            var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                                            var dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+            $('.select-search').select2({
+                dropdownParent: $('.language-selection')
+            });
+
+
+            var monthNames = ["<?= _january ?>", "<?= _february ?>", "<?= _march ?>", "<?= _april ?>", "<?= _may ?>", "<?= _june ?>", "<?= _july ?>", "<?= _august ?>", "<?= _september ?>", "<?= _october ?>", "<?= _november ?>", "<?= _december ?>"];
+            var dayNames = ["<?= _sunday ?>", "<?= _monday ?>", "<?= _tuesday ?>", "<?= _wednesday ?>", "<?= _thursday ?>", "<?= _friday ?>", "<?= _saturday ?>"]
 
 
                                             var newDate = new Date();
@@ -199,14 +247,14 @@ echo "<script type='text/javascript'>
 
 
 
-                                            setInterval(function () {
+            setInterval(function() {
                                                 // Create a newDate() object and extract the minutes of the current time on the visitor's
                                                 var minutes = new Date().getMinutes();
                                                 // Add a leading zero to the minutes value
                                                 $("#min").html((minutes < 10 ? "0" : "") + minutes);
                                             }, 1000);
 
-                                            setInterval(function () {
+            setInterval(function() {
                                                 // Create a newDate() object and extract the hours of the current time on the visitor's
                                                 var hours = new Date().getHours();
                                                 // Add a leading zero to the hours value
